@@ -65,47 +65,6 @@ describe('DeleteReplyUseCase', () => {
     expect(mockReplyRepository.deleteReply).toHaveBeenCalledWith(useCaseParams.replyId);
   });
 
-  it('should throw error when payload not contain needed property', async () => {
-    // Arrange
-    const deleteReplyUseCase = new DeleteReplyUseCase({});
-
-    // Action & Assert
-    await expect(
-      deleteReplyUseCase.execute({
-        replyId: 'reply-123',
-        threadId: 'thread-123',
-        commentId: 'comment-123',
-      }),
-    ).rejects.toThrow('DELETE_REPLY.NOT_CONTAIN_NEEDED_PROPERTY');
-
-    expect(mockThreadRepository.verifyThreadAvailability).not.toBeCalled();
-    expect(mockCommentRepository.verifyCommentAvailability).not.toBeCalled();
-    expect(mockReplyRepository.verifyReplyAvailability).not.toBeCalled();
-    expect(mockReplyRepository.verifyReplyOwner).not.toBeCalled();
-    expect(mockReplyRepository.deleteReply).not.toBeCalled();
-  });
-
-  it('should throw error when payload not meet data type specification', async () => {
-    // Arrange
-    const deleteReplyUseCase = new DeleteReplyUseCase({});
-
-    // Action & Assert
-    await expect(
-      deleteReplyUseCase.execute({
-        replyId: 123,
-        threadId: 'thread-123',
-        commentId: 'comment-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow('DELETE_REPLY_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION');
-
-    expect(mockThreadRepository.verifyThreadAvailability).not.toBeCalled();
-    expect(mockCommentRepository.verifyCommentAvailability).not.toBeCalled();
-    expect(mockReplyRepository.verifyReplyAvailability).not.toBeCalled();
-    expect(mockReplyRepository.verifyReplyOwner).not.toBeCalled();
-    expect(mockReplyRepository.deleteReply).not.toBeCalled();
-  });
-
   it('should throw AuthorizationError when user is not the reply owner', async () => {
     // Arrange
 

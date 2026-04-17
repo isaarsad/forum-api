@@ -70,8 +70,6 @@ describe('HTTP Server - Replies API', () => {
         .set('Authorization', `Bearer ${accessToken}`)
         .send(payload);
 
-      console.log(response.body);
-
       // Assert
       expect(response.status).toEqual(201);
       expect(response.body.status).toEqual('success');

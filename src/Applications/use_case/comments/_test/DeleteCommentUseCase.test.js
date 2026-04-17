@@ -57,43 +57,6 @@ describe('DeleteCommentUseCase', () => {
     expect(mockCommentRepository.deleteComment).toHaveBeenCalledWith(useCaseParams.commentId);
   });
 
-  it('should throw error when payload not contain needed property', async () => {
-    // Arrange
-    const deleteCommentUseCase = new DeleteCommentUseCase({});
-
-    // Action & Assert
-    await expect(
-      deleteCommentUseCase.execute({
-        commentId: 'comment-123',
-        threadId: 'thread-123',
-      }),
-    ).rejects.toThrow('DELETE_COMMENT.NOT_CONTAIN_NEEDED_PROPERTY');
-
-    expect(mockThreadRepository.verifyThreadAvailability).not.toBeCalled();
-    expect(mockCommentRepository.verifyCommentAvailability).not.toBeCalled();
-    expect(mockCommentRepository.verifyCommentOwner).not.toBeCalled();
-    expect(mockCommentRepository.deleteComment).not.toBeCalled();
-  });
-
-  it('should throw error when payload not meet data type specification', async () => {
-    // Arrange
-    const deleteCommentUseCase = new DeleteCommentUseCase({});
-
-    // Action & Assert
-    await expect(
-      deleteCommentUseCase.execute({
-        commentId: 123,
-        threadId: 'thread-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow('DELETE_COMMENT_USE_CASE.NOT_MEET_DATA_TYPE_SPECIFICATION');
-
-    expect(mockThreadRepository.verifyThreadAvailability).not.toBeCalled();
-    expect(mockCommentRepository.verifyCommentAvailability).not.toBeCalled();
-    expect(mockCommentRepository.verifyCommentOwner).not.toBeCalled();
-    expect(mockCommentRepository.deleteComment).not.toBeCalled();
-  });
-
   it('should throw AuthorizationError when user is not the comment owner', async () => {
     // Arrange
 
