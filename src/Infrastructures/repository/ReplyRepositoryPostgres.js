@@ -28,7 +28,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
   async verifyReplyAvailability(replyId) {
     const query = {
-      text: 'SELECT id FROM replies WHERE id = $1',
+      text: 'SELECT id FROM replies WHERE id = $1 AND is_delete = false',
       values: [replyId],
     };
 

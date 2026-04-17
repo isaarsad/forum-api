@@ -82,24 +82,62 @@ describe('GetThreadDetailUseCase', () => {
     // Action
     const getThreadById = await getThreadDetailUseCase.execute(useCaseParams.threadId);
 
-    // Assert
-    expect(getThreadById).toBeInstanceOf(DetailThread);
-    expect(getThreadById.id).toEqual(detailThread.id);
-    expect(getThreadById.title).toEqual(detailThread.title);
-    expect(getThreadById.body).toEqual(detailThread.body);
+    console.log(getThreadById);
 
-    // Comments
-    expect(getThreadById.comments).toHaveLength(2);
+    // Assert
+    // Assert
+    expect(getThreadById).toStrictEqual(
+      new DetailThread({
+        id: 'thread-123',
+        title: 'title',
+        body: 'body',
+        date: 'date',
+        username: 'username',
+        comments: [
+          {
+            id: 'comment-123',
+            username: 'username',
+            date: 'date',
+            content: 'comment content',
+            isDelete: false,
+            replies: [
+              {
+                id: 'reply-123',
+                username: 'username',
+                date: 'date',
+                content: 'reply content',
+                isDelete: false,
+              },
+              {
+                id: 'reply-456',
+                username: 'username',
+                date: 'date',
+                content: 'reply content',
+                isDelete: true,
+              },
+            ],
+          },
+          {
+            id: 'comment-456',
+            username: 'username',
+            date: 'date',
+            content: 'comment content',
+            isDelete: true,
+            replies: [],
+          },
+        ],
+      }),
+    );
+
+    // ensure internal property (isDelete) is not exposed in final output
+    expect(getThreadById.comments[0]).not.toHaveProperty('isDelete');
+    expect(getThreadById.comments[0].replies[0]).not.toHaveProperty('isDelete');
+
     expect(getThreadById.comments[0].content).toEqual('comment content');
     expect(getThreadById.comments[1].content).toEqual('**komentar telah dihapus**');
 
-    // Replis at first comment
-    expect(getThreadById.comments[0].replies).toHaveLength(2);
     expect(getThreadById.comments[0].replies[0].content).toEqual('reply content');
     expect(getThreadById.comments[0].replies[1].content).toEqual('**balasan telah dihapus**');
-
-    // Replies at second comment
-    expect(getThreadById.comments[1].replies).toHaveLength(0);
 
     expect(mockThreadRepository.getThreadById).toBeCalledWith(useCaseParams.threadId);
     expect(mockCommentRepository.getCommentsByThreadId).toBeCalledWith(useCaseParams.threadId);

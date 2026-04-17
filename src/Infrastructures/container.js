@@ -1,5 +1,3 @@
-/* istanbul ignore file */
-
 import { createContainer } from 'instances-container';
 
 // --- External & Database ---
