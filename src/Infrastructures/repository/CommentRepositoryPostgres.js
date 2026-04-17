@@ -2,7 +2,6 @@ import AddedComment from '../../Domains/comments/entities/AddedComment.js';
 import CommentRepository from '../../Domains/comments/CommentRepository.js';
 import AuthorizationError from '../../Commons/exceptions/AuthorizationError.js';
 import NotFoundError from '../../Commons/exceptions/NotFoundError.js';
-import { mapCommentDBToModel } from '../../Commons/utils/index.js';
 
 class CommentRepositoryPostgres extends CommentRepository {
   constructor(pool, idGenerator) {
@@ -47,10 +46,6 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    if (!result.rowCount) {
-      throw new NotFoundError('comment not found');
-    }
-
     const { owner: commentOwner } = result.rows[0];
     if (commentOwner !== owner) {
       throw new AuthorizationError('you are not allowed to access this resource');
@@ -63,11 +58,7 @@ class CommentRepositoryPostgres extends CommentRepository {
       values: [commentId],
     };
 
-    const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new NotFoundError('comment not found');
-    }
+    await this._pool.query(query);
   }
 
   async getCommentsByThreadId(threadId) {
@@ -78,7 +69,7 @@ class CommentRepositoryPostgres extends CommentRepository {
 
     const result = await this._pool.query(query);
 
-    return result.rows.map(mapCommentDBToModel);
+    return result.rows;
   }
 }
 

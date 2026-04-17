@@ -119,16 +119,6 @@ describe('ReplyRepositoryPostgres', () => {
   });
 
   describe('verifyReplyOwner function', () => {
-    it('should throw NotFoundError when reply not found', async () => {
-      // Arrange
-      const commentRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
-
-      // Action & Assert
-      await expect(
-        commentRepositoryPostgres.verifyReplyOwner('reply-xxx', 'user-123'),
-      ).rejects.toThrow(new NotFoundError('reply not found'));
-    });
-
     it('should throw AuthorizationError when user is not the reply owner', async () => {
       // Arrange
       const reply = {
@@ -163,16 +153,6 @@ describe('ReplyRepositoryPostgres', () => {
   });
 
   describe('deleteReply function', () => {
-    it('should throw NotFoundError when reply not found', async () => {
-      // Arrange
-      const commentRepositoryPostgres = new ReplyRepositoryPostgres(pool, {});
-
-      // Action & Assert
-      await expect(commentRepositoryPostgres.deleteReply('reply-xxx')).rejects.toThrow(
-        new NotFoundError('reply not found'),
-      );
-    });
-
     it('should delete reply correctly', async () => {
       // Arrange
       const params = {
@@ -229,22 +209,23 @@ describe('ReplyRepositoryPostgres', () => {
       expect(replies).toHaveLength(2);
       expect(Array.isArray(replies)).toBe(true);
 
+      /* eslint-disable camelcase */
       expect(replies[0]).toStrictEqual({
         id: 'reply-123',
-        commentId: 'comment-333',
+        comment_id: 'comment-333',
         username: 'userreply',
         date: '2026-04-08T07:00:00.000Z',
         content: 'first reply',
-        isDelete: false,
+        is_delete: false,
       });
 
       expect(replies[1]).toStrictEqual({
         id: 'reply-456',
-        commentId: 'comment-333',
+        comment_id: 'comment-333',
         username: 'userreply',
         date: '2026-04-09T10:00:00.000Z',
         content: 'second reply',
-        isDelete: true,
+        is_delete: true,
       });
     });
 

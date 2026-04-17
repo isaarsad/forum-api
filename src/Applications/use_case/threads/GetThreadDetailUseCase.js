@@ -1,4 +1,5 @@
 import DetailThread from '../../../Domains/threads/entities/DetailThread.js';
+import { mapCommentDBToModel, mapReplyDBToModel } from '../../../Commons/utils/index.js';
 
 class GetThreadDetailUseCase {
   constructor({ threadRepository, commentRepository, replyRepository }) {
@@ -10,10 +11,13 @@ class GetThreadDetailUseCase {
   async execute(threadId) {
     const thread = await this._threadRepository.getThreadById(threadId);
 
-    const [comments, replies] = await Promise.all([
+    const [dataComments, dataReplies] = await Promise.all([
       this._commentRepository.getCommentsByThreadId(threadId),
       this._replyRepository.getRepliesByThreadId(threadId),
     ]);
+
+    const comments = dataComments.map(mapCommentDBToModel);
+    const replies = dataReplies.map(mapReplyDBToModel);
 
     const commentsWithReplies = this._mapRepliesToComments(comments, replies);
 

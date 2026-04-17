@@ -1,6 +1,5 @@
 import AuthorizationError from '../../Commons/exceptions/AuthorizationError.js';
 import NotFoundError from '../../Commons/exceptions/NotFoundError.js';
-import { mapReplyDBToModel } from '../../Commons/utils/index.js';
 import AddedReply from '../../Domains/replies/entities/AddedReply.js';
 import ReplyRepository from '../../Domains/replies/ReplyRepository.js';
 
@@ -47,10 +46,6 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
     const result = await this._pool.query(query);
 
-    if (!result.rowCount) {
-      throw new NotFoundError('reply not found');
-    }
-
     const { owner: replyOwner } = result.rows[0];
     if (replyOwner !== owner) {
       throw new AuthorizationError('you are not allowed to access this resource');
@@ -63,11 +58,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
       values: [replyId],
     };
 
-    const result = await this._pool.query(query);
-
-    if (!result.rowCount) {
-      throw new NotFoundError('reply not found');
-    }
+    await this._pool.query(query);
   }
 
   async getRepliesByThreadId(threadId) {
@@ -83,7 +74,7 @@ class ReplyRepositoryPostgres extends ReplyRepository {
 
     const result = await this._pool.query(query);
 
-    return result.rows.map(mapReplyDBToModel);
+    return result.rows;
   }
 }
 

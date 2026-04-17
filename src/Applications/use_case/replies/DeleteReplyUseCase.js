@@ -1,4 +1,4 @@
-import DeleteReply from '../../../Domains/replies/entities/DeleteReply';
+import DeleteReply from '../../../Domains/replies/entities/DeleteReply.js';
 
 class DeleteReplyUseCase {
   constructor({ threadRepository, commentRepository, replyRepository }) {

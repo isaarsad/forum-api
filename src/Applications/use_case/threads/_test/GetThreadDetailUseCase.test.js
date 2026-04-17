@@ -20,39 +20,40 @@ describe('GetThreadDetailUseCase', () => {
       username: 'username',
     };
 
+    /* eslint-disable camelcase */
     const detailComments = [
       {
         id: 'comment-123',
         username: 'username',
         date: 'date',
         content: 'comment content',
-        isDelete: false,
+        is_delete: false,
       },
       {
         id: 'comment-456',
         username: 'username',
         date: 'date',
         content: 'comment content',
-        isDelete: true,
+        is_delete: true,
       },
     ];
 
     const detailReplies = [
       {
         id: 'reply-123',
-        commentId: 'comment-123',
+        comment_id: 'comment-123',
         username: 'username',
         content: 'reply content',
         date: 'date',
-        isDelete: false,
+        is_delete: false,
       },
       {
         id: 'reply-456',
-        commentId: 'comment-123',
+        comment_id: 'comment-123',
         username: 'username',
         content: 'reply content',
         date: 'date',
-        isDelete: true,
+        is_delete: true,
       },
     ];
 

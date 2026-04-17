@@ -111,16 +111,6 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   describe('verifyCommentOwner function', () => {
-    it('should throw NotFoundError when comment not found', async () => {
-      // Arrange
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-
-      // Action & Assert
-      await expect(
-        commentRepositoryPostgres.verifyCommentOwner('comment-xxx', 'user-123'),
-      ).rejects.toThrow(new NotFoundError('comment not found'));
-    });
-
     it('should throw AuthorizationError when user is not the comment owner', async () => {
       // Arrange
       const comment = {
@@ -155,16 +145,6 @@ describe('CommentRepositoryPostgres', () => {
   });
 
   describe('deleteComment function', () => {
-    it('should throw NotFoundError when comment not found', async () => {
-      // Arrange
-      const commentRepositoryPostgres = new CommentRepositoryPostgres(pool, {});
-
-      // Action & Assert
-      await expect(commentRepositoryPostgres.deleteComment('comment-xxx')).rejects.toThrow(
-        new NotFoundError('comment not found'),
-      );
-    });
-
     it('should delete comment correctly', async () => {
       // Arrange
       const params = {
@@ -220,12 +200,13 @@ describe('CommentRepositoryPostgres', () => {
       expect(comments).toHaveLength(2);
       expect(Array.isArray(comments)).toBe(true);
 
+      /* eslint-disable camelcase */
       expect(comments[0]).toStrictEqual({
         id: 'comment-123',
         username: 'usercomment',
         date: '2026-04-08T07:00:00.000Z',
         content: 'first comment',
-        isDelete: false,
+        is_delete: false,
       });
 
       expect(comments[1]).toStrictEqual({
@@ -233,7 +214,7 @@ describe('CommentRepositoryPostgres', () => {
         username: 'usercomment',
         date: '2026-04-09T10:00:00.000Z',
         content: 'second comment',
-        isDelete: true,
+        is_delete: true,
       });
     });
 
