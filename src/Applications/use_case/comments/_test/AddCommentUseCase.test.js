@@ -7,7 +7,7 @@ import AddCommentUseCase from '../AddCommentUseCase.js';
 import NotFoundError from '../../../../Commons/exceptions/NotFoundError.js';
 
 describe('AddCommentUseCase', () => {
-  it('should orchestrating the add comment action correctly', async () => {
+  it('should orchestrate the add comment action correctly', async () => {
     // Arrange
     const useCasePayload = {
       content: 'content',

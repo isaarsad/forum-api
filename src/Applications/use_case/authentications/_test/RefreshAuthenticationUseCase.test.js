@@ -28,7 +28,7 @@ describe('RefreshAuthenticationUseCase', () => {
     );
   });
 
-  it('should orchestrating the refresh authentication action correctly', async () => {
+  it('should orchestrate the refresh authentication action correctly', async () => {
     // Arrange
     const useCasePayload = {
       refreshToken: 'some_refresh_token',

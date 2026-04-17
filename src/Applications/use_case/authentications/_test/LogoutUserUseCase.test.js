@@ -27,7 +27,7 @@ describe('LogoutUserUseCase', () => {
     );
   });
 
-  it('should orchestrating the delete authentication action correctly', async () => {
+  it('should orchestrate the delete authentication action correctly', async () => {
     // Arrange
     const useCasePayload = {
       refreshToken: 'refreshToken',

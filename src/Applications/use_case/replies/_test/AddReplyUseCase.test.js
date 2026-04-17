@@ -8,7 +8,7 @@ import AddReplyUseCase from '../AddReplyUseCase.js';
 import NotFoundError from '../../../../Commons/exceptions/NotFoundError.js';
 
 describe('AddReplyUseCase', () => {
-  it('should orchestrating the add reply action correctly', async () => {
+  it('should orchestrate the add reply action correctly', async () => {
     // Arrange
     const useCasePayload = {
       content: 'content',

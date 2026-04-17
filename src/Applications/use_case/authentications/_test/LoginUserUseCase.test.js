@@ -7,7 +7,7 @@ import NewAuthentication from '../../../../Domains/authentications/entities/NewA
 import { vi } from 'vitest';
 
 describe('GetAuthenticationUseCase', () => {
-  it('should orchestrating the get authentication action correctly', async () => {
+  it('should orchestrate the get authentication action correctly', async () => {
     // Arrange
     const useCasePayload = {
       username: 'dicoding',

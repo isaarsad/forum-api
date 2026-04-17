@@ -24,7 +24,7 @@ describe('DeleteReplyUseCase', () => {
     mockReplyRepository.deleteReply = vi.fn();
   });
 
-  it('should orchestrating the delete reply action correctly', async () => {
+  it('should orchestrate the delete reply action correctly', async () => {
     // Arrange
     const useCaseParams = {
       replyId: 'reply-123',

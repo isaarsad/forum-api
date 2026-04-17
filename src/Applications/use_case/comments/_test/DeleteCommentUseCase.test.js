@@ -20,7 +20,7 @@ describe('DeleteCommentUseCase', () => {
     mockCommentRepository.deleteComment = vi.fn();
   });
 
-  it('should orchestrating the delete comment action correctly', async () => {
+  it('should orchestrate the delete comment action correctly', async () => {
     // Arrange
     const useCaseParams = {
       commentId: 'comment-123',

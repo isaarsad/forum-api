@@ -5,7 +5,7 @@ import ThreadRepository from '../../../../Domains/threads/ThreadRepository.js';
 import AddThreadUseCase from '../AddThreadUseCase.js';
 
 describe('AddThreadUseCase', () => {
-  it('should orchestrating the add thread action correctly', async () => {
+  it('should orchestrate the add thread action correctly', async () => {
     // Arrange
     const useCasePayload = {
       title: 'title',
