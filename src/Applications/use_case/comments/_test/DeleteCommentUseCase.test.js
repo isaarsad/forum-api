@@ -9,6 +9,12 @@ describe('DeleteCommentUseCase', () => {
   let mockThreadRepository;
   let mockCommentRepository;
 
+  const useCaseParams = {
+    commentId: 'comment-123',
+    threadId: 'thread-123',
+    owner: 'user-123',
+  };
+
   beforeEach(() => {
     /** creating dependency of use case */
     mockThreadRepository = new ThreadRepository();
@@ -22,11 +28,6 @@ describe('DeleteCommentUseCase', () => {
 
   it('should orchestrate the delete comment action correctly', async () => {
     // Arrange
-    const useCaseParams = {
-      commentId: 'comment-123',
-      threadId: 'thread-123',
-      owner: 'user-123',
-    };
 
     /** mocking needed function */
     mockThreadRepository.verifyThreadAvailability.mockResolvedValue();
@@ -74,13 +75,20 @@ describe('DeleteCommentUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      deleteCommentUseCase.execute({
-        commentId: 'comment-123',
-        threadId: 'thread-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow(new AuthorizationError('DELETE_COMMENT_USE_CASE.NOT_COMMENT_OWNER'));
+    await expect(deleteCommentUseCase.execute(useCaseParams)).rejects.toThrow(
+      new AuthorizationError('DELETE_COMMENT_USE_CASE.NOT_COMMENT_OWNER'),
+    );
+
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCaseParams.threadId,
+    );
+    expect(mockCommentRepository.verifyCommentAvailability).toHaveBeenCalledWith(
+      useCaseParams.commentId,
+    );
+    expect(mockCommentRepository.verifyCommentOwner).toHaveBeenCalledWith(
+      useCaseParams.commentId,
+      useCaseParams.owner,
+    );
 
     expect(mockCommentRepository.deleteComment).not.toBeCalled();
   });
@@ -100,13 +108,13 @@ describe('DeleteCommentUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      deleteCommentUseCase.execute({
-        commentId: 'comment-123',
-        threadId: 'thread-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow(new NotFoundError('DELETE_COMMENT_USE_CASE.THREAD_NOT_FOUND'));
+    await expect(deleteCommentUseCase.execute(useCaseParams)).rejects.toThrow(
+      new NotFoundError('DELETE_COMMENT_USE_CASE.THREAD_NOT_FOUND'),
+    );
+
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCaseParams.threadId,
+    );
 
     expect(mockCommentRepository.verifyCommentAvailability).not.toBeCalled();
     expect(mockCommentRepository.verifyCommentOwner).not.toBeCalled();
@@ -129,13 +137,16 @@ describe('DeleteCommentUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      deleteCommentUseCase.execute({
-        commentId: 'comment-123',
-        threadId: 'thread-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow(new NotFoundError('DELETE_COMMENT_USE_CASE.COMMENT_NOT_FOUND'));
+    await expect(deleteCommentUseCase.execute(useCaseParams)).rejects.toThrow(
+      new NotFoundError('DELETE_COMMENT_USE_CASE.COMMENT_NOT_FOUND'),
+    );
+
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCaseParams.threadId,
+    );
+    expect(mockCommentRepository.verifyCommentAvailability).toHaveBeenCalledWith(
+      useCaseParams.commentId,
+    );
 
     expect(mockCommentRepository.verifyCommentOwner).not.toBeCalled();
     expect(mockCommentRepository.deleteComment).not.toBeCalled();
