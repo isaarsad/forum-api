@@ -83,9 +83,6 @@ describe('GetThreadDetailUseCase', () => {
     // Action
     const getThreadById = await getThreadDetailUseCase.execute(useCaseParams.threadId);
 
-    console.log(getThreadById);
-
-    // Assert
     // Assert
     expect(getThreadById).toStrictEqual(
       new DetailThread({

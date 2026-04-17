@@ -18,7 +18,7 @@ describe('AddCommentUseCase', () => {
     const mockAddedComment = new AddedComment({
       id: 'comment-123',
       content: useCasePayload.content,
-      owner: owner,
+      owner,
     });
 
     /** creating dependency of use case */
@@ -47,7 +47,7 @@ describe('AddCommentUseCase', () => {
       new AddedComment({
         id: 'comment-123',
         content: useCasePayload.content,
-        owner: owner,
+        owner,
       }),
     );
 
@@ -56,8 +56,8 @@ describe('AddCommentUseCase', () => {
     expect(mockCommentRepository.addComment).toBeCalledWith(
       new NewComment({
         content: useCasePayload.content,
-        threadId: threadId,
-        owner: owner,
+        threadId,
+        owner,
       }),
     );
   });
@@ -90,11 +90,12 @@ describe('AddCommentUseCase', () => {
     await expect(
       addCommentUseCase.execute({
         ...useCasePayload,
-        threadId: threadId,
-        owner: owner,
+        threadId,
+        owner,
       }),
     ).rejects.toThrow(new NotFoundError('THREAD_NOT_FOUND'));
 
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(threadId);
     expect(mockCommentRepository.addComment).not.toBeCalled();
   });
 });
