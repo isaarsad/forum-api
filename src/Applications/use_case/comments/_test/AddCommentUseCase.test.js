@@ -41,9 +41,9 @@ describe('AddCommentUseCase', () => {
     // Assert
     expect(addedComment).toStrictEqual(
       new AddedComment({
-        id: 'comment-123',
-        content: 'content',
-        owner: 'user-123',
+        id: mockAddedComment.id,
+        content: useCasePayload.content,
+        owner: useCasePayload.owner,
       }),
     );
 

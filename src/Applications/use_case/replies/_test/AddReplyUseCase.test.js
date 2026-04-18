@@ -46,9 +46,9 @@ describe('AddReplyUseCase', () => {
     // Assert
     expect(addedReply).toStrictEqual(
       new AddedReply({
-        id: 'reply-123',
-        content: 'content',
-        owner: 'user-123',
+        id: mockAddedReply.id,
+        content: useCasePayload.content,
+        owner: useCasePayload.owner,
       }),
     );
 
