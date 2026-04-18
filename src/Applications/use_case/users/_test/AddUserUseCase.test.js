@@ -13,29 +13,25 @@ describe('AddUserUseCase', () => {
   it('should orchestrate the add user action correctly', async () => {
     // Arrange
     const useCasePayload = {
-      username: 'dicoding',
+      username: 'arsadisa',
       password: 'secret',
-      fullname: 'Dicoding Indonesia',
+      fullname: 'Isa Arsad',
     };
 
-    const mockRegisteredUser = new RegisteredUser({
+    const mockRegisteredUser = {
       id: 'user-123',
       username: useCasePayload.username,
       fullname: useCasePayload.fullname,
-    });
+    };
 
     /** creating dependency of use case */
     const mockUserRepository = new UserRepository();
     const mockPasswordHash = new PasswordHash();
 
     /** mocking needed function */
-    mockUserRepository.verifyAvailableUsername = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve());
-    mockPasswordHash.hash = vi.fn().mockImplementation(() => Promise.resolve('encrypted_password'));
-    mockUserRepository.addUser = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve(mockRegisteredUser));
+    mockUserRepository.verifyAvailableUsername = vi.fn().mockResolvedValue();
+    mockPasswordHash.hash = vi.fn().mockResolvedValue('encrypted_password');
+    mockUserRepository.addUser = vi.fn().mockResolvedValue(mockRegisteredUser);
 
     /** creating use case instance */
     const addUserUseCase = new AddUserUseCase({
@@ -49,7 +45,7 @@ describe('AddUserUseCase', () => {
     // Assert
     expect(registeredUser).toStrictEqual(
       new RegisteredUser({
-        id: 'user-123',
+        id: mockRegisteredUser.id,
         username: useCasePayload.username,
         fullname: useCasePayload.fullname,
       }),
@@ -68,7 +64,11 @@ describe('AddUserUseCase', () => {
 
   it('should throw error when username not available', async () => {
     // Arrange
-
+    const useCasePayload = {
+      username: 'arsadisa',
+      password: 'secret',
+      fullname: 'Isa Arsad',
+    };
     /** creating dependency of use case */
     const mockUserRepository = new UserRepository();
     const mockPasswordHash = new PasswordHash();
@@ -76,8 +76,9 @@ describe('AddUserUseCase', () => {
     /** mocking needed function */
     mockUserRepository.verifyAvailableUsername = vi
       .fn()
-      .mockImplementation(() => Promise.reject(new InvariantError('USERNAME_NOT_AVAILABLE')));
-    mockPasswordHash.hash = vi.fn().mockImplementation(() => Promise.resolve('encrypted_password'));
+      .mockRejectedValue(new InvariantError('USERNAME_NOT_AVAILABLE'));
+    mockPasswordHash.hash = vi.fn().mockResolvedValue('encrypted_password');
+    mockUserRepository.addUser = vi.fn();
 
     /** creating use case instance */
     const addUserUseCase = new AddUserUseCase({
@@ -86,15 +87,10 @@ describe('AddUserUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      addUserUseCase.execute({
-        username: 'dicoding',
-        password: 'secret',
-        fullname: 'Dicoding Indonesia',
-      }),
-    ).rejects.toThrow(InvariantError);
+    await expect(addUserUseCase.execute(useCasePayload)).rejects.toThrow(InvariantError);
 
-    expect(mockUserRepository.verifyAvailableUsername).toBeCalled();
+    expect(mockUserRepository.verifyAvailableUsername).toBeCalledWith(useCasePayload.username);
     expect(mockPasswordHash.hash).not.toBeCalled();
+    expect(mockUserRepository.addUser).not.toBeCalled();
   });
 });
