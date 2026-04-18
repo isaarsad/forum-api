@@ -10,35 +10,33 @@ describe('AddThreadUseCase', () => {
     const useCasePayload = {
       title: 'title',
       body: 'body',
+      owner: 'user-123',
     };
-    const owner = 'user-123';
 
-    const mockAddedThread = new AddedThread({
+    const mockAddedThread = {
       id: 'thread-123',
       title: useCasePayload.title,
-      owner: owner,
-    });
+      owner: useCasePayload.owner,
+    };
 
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
 
     /** mocking needed function */
-    mockThreadRepository.addThread = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve(mockAddedThread));
+    mockThreadRepository.addThread = vi.fn().mockResolvedValue(mockAddedThread);
 
     /** creating use case instance */
     const addThreadUseCase = new AddThreadUseCase({ threadRepository: mockThreadRepository });
 
     // Action
-    const addedThread = await addThreadUseCase.execute({ ...useCasePayload, owner });
+    const addedThread = await addThreadUseCase.execute(useCasePayload);
 
     // Assert
     expect(addedThread).toStrictEqual(
       new AddedThread({
-        id: 'thread-123',
+        id: mockAddedThread.id,
         title: useCasePayload.title,
-        owner: owner,
+        owner: useCasePayload.owner,
       }),
     );
 
@@ -46,7 +44,7 @@ describe('AddThreadUseCase', () => {
       new NewThread({
         title: useCasePayload.title,
         body: useCasePayload.body,
-        owner: owner,
+        owner: useCasePayload.owner,
       }),
     );
   });
