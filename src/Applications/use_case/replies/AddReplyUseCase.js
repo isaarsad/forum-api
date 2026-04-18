@@ -1,3 +1,4 @@
+import AddedReply from '../../../Domains/replies/entities/AddedReply.js';
 import NewReply from '../../../Domains/replies/entities/NewReply.js';
 
 class AddReplyUseCase {
@@ -10,16 +11,22 @@ class AddReplyUseCase {
   async execute(useCasePayload) {
     const { threadId, commentId, owner, content } = useCasePayload;
 
-    await this._threadRepository.verifyThreadAvailability(threadId);
-    await this._commentRepository.verifyCommentAvailability(commentId);
-
-    const addReply = new NewReply({
+    const newReply = new NewReply({
       content,
       commentId,
       owner,
     });
 
-    return this._replyRepository.addReply(addReply);
+    await this._threadRepository.verifyThreadAvailability(threadId);
+    await this._commentRepository.verifyCommentAvailability(commentId);
+
+    const addedReply = await this._replyRepository.addReply(newReply);
+
+    return new AddedReply({
+      id: addedReply.id,
+      content: addedReply.content,
+      owner: addedReply.owner,
+    });
   }
 }
 
