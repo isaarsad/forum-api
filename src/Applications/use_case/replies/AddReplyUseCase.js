@@ -11,17 +11,12 @@ class AddReplyUseCase {
   async execute(useCasePayload) {
     const { threadId, commentId, owner, content } = useCasePayload;
 
-    const newReply = new NewReply({
-      content,
-      commentId,
-      owner,
-    });
+    const newReply = new NewReply({ content, commentId, owner });
 
     await this._threadRepository.verifyThreadAvailability(threadId);
     await this._commentRepository.verifyCommentAvailability(commentId);
 
     const addedReply = await this._replyRepository.addReply(newReply);
-
     return new AddedReply({
       id: addedReply.id,
       content: addedReply.content,

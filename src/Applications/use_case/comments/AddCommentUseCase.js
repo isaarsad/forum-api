@@ -1,3 +1,4 @@
+import AddedComment from '../../../Domains/comments/entities/AddedComment.js';
 import NewComment from '../../../Domains/comments/entities/NewComment.js';
 
 class AddCommentUseCase {
@@ -7,9 +8,18 @@ class AddCommentUseCase {
   }
 
   async execute(useCasePayload) {
-    const addComment = new NewComment(useCasePayload);
-    await this._threadRepository.verifyThreadAvailability(addComment.threadId);
-    return this._commentRepository.addComment(addComment);
+    const { threadId, owner, content } = useCasePayload;
+
+    const newComment = new NewComment({ content, threadId, owner });
+
+    await this._threadRepository.verifyThreadAvailability(threadId);
+
+    const addedComment = await this._commentRepository.addComment(newComment);
+    return new AddedComment({
+      id: addedComment.id,
+      content: addedComment.content,
+      owner: addedComment.owner,
+    });
   }
 }
 

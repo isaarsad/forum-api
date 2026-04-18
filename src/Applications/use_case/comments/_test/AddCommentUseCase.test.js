@@ -11,27 +11,23 @@ describe('AddCommentUseCase', () => {
     // Arrange
     const useCasePayload = {
       content: 'content',
+      threadId: 'thread-123',
+      owner: 'user-123',
     };
-    const threadId = 'thread-123';
-    const owner = 'user-123';
 
-    const mockAddedComment = new AddedComment({
+    const mockAddedComment = {
       id: 'comment-123',
       content: useCasePayload.content,
-      owner,
-    });
+      owner: useCasePayload.owner,
+    };
 
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
     const mockCommentRepository = new CommentRepository();
 
     /** mocking needed function */
-    mockThreadRepository.verifyThreadAvailability = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve());
-    mockCommentRepository.addComment = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve(mockAddedComment));
+    mockThreadRepository.verifyThreadAvailability = vi.fn().mockResolvedValue();
+    mockCommentRepository.addComment = vi.fn().mockResolvedValue(mockAddedComment);
 
     /** creating use case instance */
     const addCommentUseCase = new AddCommentUseCase({
@@ -40,24 +36,26 @@ describe('AddCommentUseCase', () => {
     });
 
     // Action
-    const addedComment = await addCommentUseCase.execute({ ...useCasePayload, threadId, owner });
+    const addedComment = await addCommentUseCase.execute(useCasePayload);
 
     // Assert
     expect(addedComment).toStrictEqual(
       new AddedComment({
         id: 'comment-123',
-        content: useCasePayload.content,
-        owner,
+        content: 'content',
+        owner: 'user-123',
       }),
     );
 
-    expect(mockThreadRepository.verifyThreadAvailability).toBeCalledWith(threadId);
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCasePayload.threadId,
+    );
 
     expect(mockCommentRepository.addComment).toBeCalledWith(
       new NewComment({
         content: useCasePayload.content,
-        threadId,
-        owner,
+        threadId: useCasePayload.threadId,
+        owner: useCasePayload.owner,
       }),
     );
   });
@@ -66,9 +64,9 @@ describe('AddCommentUseCase', () => {
     // Arrange
     const useCasePayload = {
       content: 'content',
+      threadId: 'thread-123',
+      owner: 'user-123',
     };
-    const threadId = 'thread-123';
-    const owner = 'user-123';
 
     /** creating dependency of use case */
     const mockThreadRepository = new ThreadRepository();
@@ -77,7 +75,7 @@ describe('AddCommentUseCase', () => {
     /** mocking needed function */
     mockThreadRepository.verifyThreadAvailability = vi
       .fn()
-      .mockImplementation(() => Promise.reject(new NotFoundError('THREAD_NOT_FOUND')));
+      .mockRejectedValue(new NotFoundError('THREAD_NOT_FOUND'));
     mockCommentRepository.addComment = vi.fn();
 
     /** creating use case instance */
@@ -87,15 +85,13 @@ describe('AddCommentUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      addCommentUseCase.execute({
-        ...useCasePayload,
-        threadId,
-        owner,
-      }),
-    ).rejects.toThrow(new NotFoundError('THREAD_NOT_FOUND'));
+    await expect(addCommentUseCase.execute(useCasePayload)).rejects.toThrow(
+      new NotFoundError('THREAD_NOT_FOUND'),
+    );
 
-    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(threadId);
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCasePayload.threadId,
+    );
     expect(mockCommentRepository.addComment).not.toBeCalled();
   });
 });
