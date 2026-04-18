@@ -11,6 +11,13 @@ describe('DeleteReplyUseCase', () => {
   let mockCommentRepository;
   let mockReplyRepository;
 
+  const useCaseParams = {
+    replyId: 'reply-123',
+    commentId: 'comment-123',
+    threadId: 'thread-123',
+    owner: 'user-123',
+  };
+
   beforeEach(() => {
     /** creating dependency of use case */
     mockThreadRepository = new ThreadRepository();
@@ -26,12 +33,6 @@ describe('DeleteReplyUseCase', () => {
 
   it('should orchestrate the delete reply action correctly', async () => {
     // Arrange
-    const useCaseParams = {
-      replyId: 'reply-123',
-      commentId: 'comment-123',
-      threadId: 'thread-123',
-      owner: 'user-123',
-    };
 
     /** mocking needed function */
     mockThreadRepository.verifyThreadAvailability.mockResolvedValue();
@@ -84,14 +85,21 @@ describe('DeleteReplyUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      deleteReplyUseCase.execute({
-        replyId: 'reply-123',
-        commentId: 'comment-123',
-        threadId: 'thread-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow(new AuthorizationError('DELETE_REPLY_USE_CASE.NOT_REPLY_OWNER'));
+    await expect(deleteReplyUseCase.execute(useCaseParams)).rejects.toThrow(
+      new AuthorizationError('DELETE_REPLY_USE_CASE.NOT_REPLY_OWNER'),
+    );
+
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCaseParams.threadId,
+    );
+    expect(mockCommentRepository.verifyCommentAvailability).toHaveBeenCalledWith(
+      useCaseParams.commentId,
+    );
+    expect(mockReplyRepository.verifyReplyAvailability).toHaveBeenCalledWith(useCaseParams.replyId);
+    expect(mockReplyRepository.verifyReplyOwner).toHaveBeenCalledWith(
+      useCaseParams.replyId,
+      useCaseParams.owner,
+    );
 
     expect(mockReplyRepository.deleteReply).not.toBeCalled();
   });
@@ -112,14 +120,13 @@ describe('DeleteReplyUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      deleteReplyUseCase.execute({
-        replyId: 'reply-123',
-        commentId: 'comment-123',
-        threadId: 'thread-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow(new NotFoundError('DELETE_REPLY_USE_CASE.THREAD_NOT_FOUND'));
+    await expect(deleteReplyUseCase.execute(useCaseParams)).rejects.toThrow(
+      new NotFoundError('DELETE_REPLY_USE_CASE.THREAD_NOT_FOUND'),
+    );
+
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCaseParams.threadId,
+    );
 
     expect(mockCommentRepository.verifyCommentAvailability).not.toBeCalled();
     expect(mockReplyRepository.verifyReplyAvailability).not.toBeCalled();
@@ -144,14 +151,16 @@ describe('DeleteReplyUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      deleteReplyUseCase.execute({
-        replyId: 'reply-123',
-        commentId: 'comment-123',
-        threadId: 'thread-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow(new NotFoundError('DELETE_REPLY_USE_CASE.COMMENT_NOT_FOUND'));
+    await expect(deleteReplyUseCase.execute(useCaseParams)).rejects.toThrow(
+      new NotFoundError('DELETE_REPLY_USE_CASE.COMMENT_NOT_FOUND'),
+    );
+
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCaseParams.threadId,
+    );
+    expect(mockCommentRepository.verifyCommentAvailability).toHaveBeenCalledWith(
+      useCaseParams.commentId,
+    );
 
     expect(mockReplyRepository.verifyReplyAvailability).not.toBeCalled();
     expect(mockReplyRepository.verifyReplyOwner).not.toBeCalled();
@@ -176,14 +185,17 @@ describe('DeleteReplyUseCase', () => {
     });
 
     // Action & Assert
-    await expect(
-      deleteReplyUseCase.execute({
-        replyId: 'reply-123',
-        commentId: 'comment-123',
-        threadId: 'thread-123',
-        owner: 'user-123',
-      }),
-    ).rejects.toThrow(new NotFoundError('DELETE_REPLY_USE_CASE.REPLY_NOT_FOUND'));
+    await expect(deleteReplyUseCase.execute(useCaseParams)).rejects.toThrow(
+      new NotFoundError('DELETE_REPLY_USE_CASE.REPLY_NOT_FOUND'),
+    );
+
+    expect(mockThreadRepository.verifyThreadAvailability).toHaveBeenCalledWith(
+      useCaseParams.threadId,
+    );
+    expect(mockCommentRepository.verifyCommentAvailability).toHaveBeenCalledWith(
+      useCaseParams.commentId,
+    );
+    expect(mockReplyRepository.verifyReplyAvailability).toHaveBeenCalledWith(useCaseParams.replyId);
 
     expect(mockReplyRepository.verifyReplyOwner).not.toBeCalled();
     expect(mockReplyRepository.deleteReply).not.toBeCalled();
