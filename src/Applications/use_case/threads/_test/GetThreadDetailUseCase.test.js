@@ -63,15 +63,9 @@ describe('GetThreadDetailUseCase', () => {
     const mockReplyRepository = new ReplyRepository();
 
     /** mocking needed function */
-    mockThreadRepository.getThreadById = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve(detailThread));
-    mockCommentRepository.getCommentsByThreadId = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve(detailComments));
-    mockReplyRepository.getRepliesByThreadId = vi
-      .fn()
-      .mockImplementation(() => Promise.resolve(detailReplies));
+    mockThreadRepository.getThreadById = vi.fn().mockResolvedValue(detailThread);
+    mockCommentRepository.getCommentsByThreadId = vi.fn().mockResolvedValue(detailComments);
+    mockReplyRepository.getRepliesByThreadId = vi.fn().mockResolvedValue(detailReplies);
 
     /** creating use case instance */
     const getThreadDetailUseCase = new GetThreadDetailUseCase({
