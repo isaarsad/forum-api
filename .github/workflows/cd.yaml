@@ -1,0 +1,34 @@
+name: Continuous Deployment
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.SSH_PORT }}
+          script: |
+            # Navigate to project directory and deploy latest changes
+            cd ~/forum-api 
+
+            # Pull latest code from repository
+            git pull origin main
+
+            # Install production dependencies
+            npm ci --omit=dev --no-audit --no-fund
+
+            # Run database migrations
+            npm run migrate up
+
+            # Restart aplication using PM2
+            pm2 restart forum-api

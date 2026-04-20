@@ -47,7 +47,7 @@ jobs:
           PGPASSWORD: supersecretpassword
           PGDATABASE: forumapi_test
           PGPORT: 5432
-        run: npm run migrate:test
+        run: npm run migrate:test up
 
       - name: Run tests (Unit, Integration, Functional)
         env:
