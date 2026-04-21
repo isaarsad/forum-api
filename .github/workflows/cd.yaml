@@ -24,6 +24,10 @@ jobs:
             # Pull latest code from repository
             git pull origin main
 
+            # Load NVM
+            export NVM_DIR="$HOME/.nvm"
+            [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
             # Install production dependencies
             npm ci --omit=dev --no-audit --no-fund
 
