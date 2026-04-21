@@ -21,6 +21,16 @@ const UserCommentLikesTableTestHelper = {
     return result.rows;
   },
 
+  async findByUserIdAndCommentId(userId, commentId) {
+    const query = {
+      text: 'SELECT * from user_comment_likes WHERE user_id = $1 AND comment_id = $2',
+      values: [userId, commentId],
+    };
+
+    const result = await pool.query(query);
+    return result.rows;
+  },
+
   async cleanTable() {
     await pool.query('TRUNCATE TABLE user_comment_likes CASCADE');
   },

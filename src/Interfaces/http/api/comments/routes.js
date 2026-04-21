@@ -6,6 +6,11 @@ const createCommentsRouter = (controller, getTokenManager) => {
 
   router.post('/', AuthMiddleware(getTokenManager), controller.postCommentController);
   router.delete('/:commentId', AuthMiddleware(getTokenManager), controller.deleteCommentController);
+  router.put(
+    '/:commentId/likes',
+    AuthMiddleware(getTokenManager),
+    controller.putLikeCommentController,
+  );
 
   return router;
 };

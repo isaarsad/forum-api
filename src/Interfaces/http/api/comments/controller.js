@@ -7,6 +7,7 @@ class CommentsController {
 
     this.postCommentController = this.postCommentController.bind(this);
     this.deleteCommentController = this.deleteCommentController.bind(this);
+    this.putLikeCommentController = this.putLikeCommentController.bind(this);
   }
 
   async postCommentController(req, res) {
