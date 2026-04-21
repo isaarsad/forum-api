@@ -26,6 +26,7 @@ import AddThreadUseCase from '../Applications/use_case/threads/AddThreadUseCase.
 import GetThreadDetailUseCase from '../Applications/use_case/threads/GetThreadDetailUseCase.js';
 import AddCommentUseCase from '../Applications/use_case/comments/AddCommentUseCase.js';
 import DeleteCommentUseCase from '../Applications/use_case/comments/DeleteCommentUseCase.js';
+import LikeCommentUseCase from '../Applications/use_case/comments/LikeCommentUseCase.js';
 import AddReplyUseCase from '../Applications/use_case/replies/AddReplyUseCase.js';
 import DeleteReplyUseCase from '../Applications/use_case/replies/DeleteReplyUseCase.js';
 
@@ -158,6 +159,17 @@ container.register([
   {
     key: DeleteCommentUseCase.name,
     Class: DeleteCommentUseCase,
+    parameter: {
+      injectType: 'destructuring',
+      dependencies: [
+        { name: 'threadRepository', internal: ThreadRepository.name },
+        { name: 'commentRepository', internal: CommentRepository.name },
+      ],
+    },
+  },
+  {
+    key: LikeCommentUseCase.name,
+    Class: LikeCommentUseCase,
     parameter: {
       injectType: 'destructuring',
       dependencies: [

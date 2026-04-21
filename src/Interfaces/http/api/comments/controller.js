@@ -1,5 +1,6 @@
 import AddCommentUseCase from '../../../../Applications/use_case/comments/AddCommentUseCase.js';
 import DeleteCommentUseCase from '../../../../Applications/use_case/comments/DeleteCommentUseCase.js';
+import LikeCommentUseCase from '../../../../Applications/use_case/comments/LikeCommentUseCase.js';
 
 class CommentsController {
   constructor(container) {
@@ -7,6 +8,7 @@ class CommentsController {
 
     this.postCommentController = this.postCommentController.bind(this);
     this.deleteCommentController = this.deleteCommentController.bind(this);
+    this.putLikeCommentController = this.putLikeCommentController.bind(this);
   }
 
   async postCommentController(req, res) {
@@ -32,6 +34,20 @@ class CommentsController {
     await deleteCommentUseCase.execute({
       ...req.params,
       owner: req.user.id,
+    });
+
+    res.status(200).json({
+      status: 'success',
+    });
+  }
+
+  async putLikeCommentController(req, res) {
+    const likeCommentUseCase = this._container.getInstance(LikeCommentUseCase.name);
+
+    await likeCommentUseCase.execute({
+      threadId: req.params.threadId,
+      commentId: req.params.commentId,
+      userId: req.user.id,
     });
 
     res.status(200).json({

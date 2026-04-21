@@ -28,6 +28,7 @@ describe('GetThreadDetailUseCase', () => {
         date: 'date',
         content: 'comment content',
         is_delete: false,
+        like_count: 20,
       },
       {
         id: 'comment-456',
@@ -35,6 +36,7 @@ describe('GetThreadDetailUseCase', () => {
         date: 'date',
         content: 'comment content',
         is_delete: true,
+        like_count: 0,
       },
     ];
 
@@ -92,6 +94,7 @@ describe('GetThreadDetailUseCase', () => {
             date: 'date',
             content: 'comment content',
             isDelete: false,
+            likeCount: 20,
             replies: [
               {
                 id: 'reply-123',
@@ -115,6 +118,7 @@ describe('GetThreadDetailUseCase', () => {
             date: 'date',
             content: 'comment content',
             isDelete: true,
+            likeCount: 0,
             replies: [],
           },
         ],

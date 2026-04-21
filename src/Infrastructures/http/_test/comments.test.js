@@ -2,10 +2,11 @@ import request from 'supertest';
 import ThreadsTableTestHelper from '../../../../tests/ThreadsTableTestHelper.js';
 import UsersTableTestHelper from '../../../../tests/UsersTableTestHelper.js';
 import AuthenticationTokenManager from '../../../Applications/security/AuthenticationTokenManager.js';
+import CommentsTableTestHelper from '../../../../tests/CommentsTableTestHelper.js';
+import UserCommentLikesTableTestHelper from '../../../../tests/UserCommentLikesTableTestHelper.js';
 import container from '../../container.js';
 import pool from '../../database/postgres/pool.js';
 import createServer from '../createServer.js';
-import CommentsTableTestHelper from '../../../../tests/CommentsTableTestHelper.js';
 
 describe('HTTP Server - Comments API', () => {
   let app;
@@ -44,6 +45,7 @@ describe('HTTP Server - Comments API', () => {
   });
 
   afterEach(async () => {
+    await UserCommentLikesTableTestHelper.cleanTable();
     await CommentsTableTestHelper.cleanTable();
     await ThreadsTableTestHelper.cleanTable();
     await UsersTableTestHelper.cleanTable();
@@ -179,9 +181,9 @@ describe('HTTP Server - Comments API', () => {
       });
 
       // Action
-      const response = await request(app)
-        .delete(`/threads/${params.threadId}/comments/${params.commentId}`)
-        .send(params);
+      const response = await request(app).delete(
+        `/threads/${params.threadId}/comments/${params.commentId}`,
+      );
 
       // Assert
       expect(response.status).toEqual(401);
@@ -200,8 +202,7 @@ describe('HTTP Server - Comments API', () => {
       // Action
       const response = await request(app)
         .delete(`/threads/${params.threadId}/comments/${params.commentId}`)
-        .set('Authorization', 'Bearer')
-        .send(params);
+        .set('Authorization', 'Bearer');
 
       // Assert
       expect(response.status).toEqual(401);
@@ -237,6 +238,7 @@ describe('HTTP Server - Comments API', () => {
     });
 
     it('should respond with 404 when thread is not found', async () => {
+      // Arrange
       await CommentsTableTestHelper.addComment({
         id: params.commentId,
         threadId: params.threadId,
@@ -255,6 +257,7 @@ describe('HTTP Server - Comments API', () => {
     });
 
     it('should respond with 404 when comment is not found', async () => {
+      // Arrange
       await CommentsTableTestHelper.addComment({
         id: params.commentId,
         threadId: params.threadId,
@@ -264,6 +267,137 @@ describe('HTTP Server - Comments API', () => {
       // Action
       const response = await request(app)
         .delete(`/threads/${params.threadId}/comments/comment-xxx`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(404);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('comment not found');
+    });
+  });
+
+  describe('when PUT /threads/{threadId}/comments/{commentId}/likes', () => {
+    it('should respond 200 and like comment correctly', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: params.commentId,
+        threadId: params.threadId,
+        owner: params.owner,
+      });
+
+      // Action
+      const response = await request(app)
+        .put(`/threads/${params.threadId}/comments/${params.commentId}/likes`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(200);
+      expect(response.body.status).toEqual('success');
+
+      const likes = await UserCommentLikesTableTestHelper.findByUserIdAndCommentId(
+        userId,
+        params.commentId,
+      );
+      expect(likes).toHaveLength(1);
+    });
+
+    it('should respond 200 and unlike comment correctly', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: params.commentId,
+        threadId: params.threadId,
+        owner: params.owner,
+      });
+      await UserCommentLikesTableTestHelper.addLike({
+        id: 'like-123',
+        userId,
+        commentId: params.commentId,
+      });
+
+      // Action
+      const response = await request(app)
+        .put(`/threads/${params.threadId}/comments/${params.commentId}/likes`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(200);
+      expect(response.body.status).toEqual('success');
+
+      const likes = await UserCommentLikesTableTestHelper.findByUserIdAndCommentId(
+        userId,
+        params.commentId,
+      );
+      expect(likes).toHaveLength(0);
+    });
+
+    it('should respond 401 when request without access token', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: params.commentId,
+        threadId: params.threadId,
+        owner: params.owner,
+      });
+
+      // Action
+      const response = await request(app).put(
+        `/threads/${params.threadId}/comments/${params.commentId}/likes`,
+      );
+
+      // Assert
+      expect(response.status).toEqual(401);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('Missing authentication');
+    });
+
+    it('should respond 401 when token format is invalid', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: params.commentId,
+        threadId: params.threadId,
+        owner: params.owner,
+      });
+
+      // Action
+      const response = await request(app)
+        .put(`/threads/${params.threadId}/comments/${params.commentId}/likes`)
+        .set('Authorization', 'Bearer');
+
+      // Assert
+      expect(response.status).toEqual(401);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('Token Invalid');
+    });
+
+    it('should respond with 404 when thread is not found', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: params.commentId,
+        threadId: params.threadId,
+        owner: params.owner,
+      });
+
+      // Action
+      const response = await request(app)
+        .put(`/threads/thread-xxx/comments/${params.commentId}/likes`)
+        .set('Authorization', `Bearer ${accessToken}`);
+
+      // Assert
+      expect(response.status).toEqual(404);
+      expect(response.body.status).toEqual('fail');
+      expect(response.body.message).toEqual('thread not found');
+    });
+
+    it('should respond with 404 when comment is not found', async () => {
+      // Arrange
+      await CommentsTableTestHelper.addComment({
+        id: params.commentId,
+        threadId: params.threadId,
+        owner: params.owner,
+      });
+
+      // Action
+      const response = await request(app)
+        .put(`/threads/${params.threadId}/comments/comment-xxx/likes`)
         .set('Authorization', `Bearer ${accessToken}`);
 
       // Assert
