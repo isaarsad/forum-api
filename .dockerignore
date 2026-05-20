@@ -1,0 +1,11 @@
+node_modules
+coverage
+.idea
+.vscode
+.env
+.test.env
+*.pem
+Dockerfile
+docker-compose.yml
+docker-compose.override.yml
+.git

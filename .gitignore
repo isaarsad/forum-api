@@ -5,3 +5,5 @@ coverage
 .env
 .test.env
 *.pem
+docker-compose.override.yaml
+nginx

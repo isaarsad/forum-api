@@ -10,6 +10,8 @@ import replies from '../../Interfaces/http/api/replies/index.js';
 const createServer = async (container) => {
   const app = express();
 
+  app.set('trust proxy', 1);
+
   // Middleware for parsing JSON
   app.use(express.json());
 
