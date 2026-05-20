@@ -13,6 +13,9 @@ services:
       PGPASSWORD: ${PGPASSWORD}
       PGDATABASE: ${PGDATABASE}
       PGPORT: ${PGPORT}
+      ACCESS_TOKEN_KEY: ${ACCESS_TOKEN_KEY}
+      REFRESH_TOKEN_KEY: ${REFRESH_TOKEN_KEY}
+      ACCESS_TOKEN_AGE: ${ACCESS_TOKEN_AGE}
     depends_on:
       postgres_db:
         condition: service_healthy
