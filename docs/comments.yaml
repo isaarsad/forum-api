@@ -1,0 +1,140 @@
+paths:
+  /threads/{threadId}/comments:
+    post:
+      summary: Add a comment to a thread
+      tags:
+        - Comments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          description: The ID of the thread you want to comment on
+          schema:
+            type: string
+            example: 'thread-123'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: 'I completely agree with your statement.'
+      responses:
+        201:
+          description: Comment successfully added.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      addedComment:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: 'comment-123'
+                          content:
+                            type: string
+                            example: 'I completely agree with your statement'
+                          owner:
+                            type: string
+                            example: 'user-123'
+        400:
+          description: Bad Request. Missing required fields or bad data format.
+        401:
+          description: Unauthorized. Authentication is required to access this resource.
+        404:
+          description: Thread Not Found.
+
+  /threads/{threadId}/comments/{commentId}:
+    delete:
+      summary: Delete a comment from a thread
+      tags:
+        - Comments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          description: The ID of the thread containing the comment
+          schema:
+            type: string
+            example: 'thread-123'
+        - name: commentId
+          in: path
+          required: true
+          description: The ID of the comment to be deleted
+          schema:
+            type: string
+            example: 'comment-123'
+      responses:
+        200:
+          description: Comment successfully deleted (soft delete).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        401:
+          description: Unauthorized. Missing or invalid authentication token.
+        403:
+          description: Forbidden. You do not have permission to delete this comment.
+        404:
+          description: Thread or Comment Not Found.
+
+  /threads/{threadId}/comments/{commentId}/likes:
+  put:
+    summary: Toggle like on a comment
+    tags:
+      - Comment Likes
+    security:
+      - BearerAuth: []
+    parameters:
+      - name: threadId
+        in: path
+        required: true
+        description: The ID of the thread containing the comment
+        schema:
+          type: string
+          example: 'thread-123'
+      - name: commentId
+        in: path
+        required: true
+        description: The ID of the comment to like or unlike
+        schema:
+          type: string
+          example: 'comment-123'
+
+    responses:
+      200:
+        description: Comment like status successfully updated.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: success
+      401:
+        description: Unauthorized. Missing or invalid authentication token.
+
+      404:
+        description: Thread or comment not found.

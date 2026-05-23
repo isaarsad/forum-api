@@ -1,0 +1,115 @@
+paths:
+  /authentications:
+    post:
+      summary: User Login
+      tags:
+        - Authentications
+      description: Authenticate user credentials and return access and refresh tokens.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  example: arsadisa
+                password:
+                  type: string
+                  example: secret_password
+      responses:
+        201:
+          description: Login successful. Tokens generated.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                      refreshToken:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh...'
+        400:
+          description: Bad request. Invalid credentials format or request payload
+        401:
+          description: Unauthorized. Invalid username or password.
+
+    put:
+      summary: Refresh Access Token
+      tags:
+        - Authentications
+      description: Generate a new access token using a valid refresh token.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh...'
+      responses:
+        200:
+          description: Access token refreshed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      accessToken:
+                        type: string
+                        example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.new_token...'
+        400:
+          description: Bad request. Refresh token is missing or invalid.
+
+    delete:
+      summary: User Logout
+      tags:
+        - Authentications
+      description: Revoke the refresh token and terminate the user's authentication session.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+                  example: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.refresh...'
+      responses:
+        200:
+          description: Logout successful. Refresh token revoked.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        400:
+          description: Bad request. Refresh token is missing from the request body.

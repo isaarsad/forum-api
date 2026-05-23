@@ -1,0 +1,136 @@
+paths:
+  /threads:
+    post:
+      summary: Create a new thread
+      tags:
+        - Threads
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - body
+              properties:
+                title:
+                  type: string
+                  example: 'Will AI Replace Programmers?'
+                body:
+                  type: string
+                  example: 'AI helps developers write code faster, but problem-solving skills are still essential.'
+      responses:
+        201:
+          description: Thread successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      addedThread:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: 'thread-h_123'
+                          title:
+                            type: string
+                            example: 'Will AI Replace Programmers?'
+                          owner:
+                            type: string
+                            example: 'user-456'
+        400:
+          description: Bad Request. Missing required properties or invalid data type. Fix your payload.
+        401:
+          description: Unauthorized. Missing, expired, or corrupted Bearer Token. Go login first.
+
+  /threads/{threadId}:
+    get:
+      summary: Get detailed thread by ID
+      tags:
+        - Threads
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          description: The unique identifier of the thread you want to fetch
+          schema:
+            type: string
+            example: 'thread-123'
+      responses:
+        200:
+          description: Thread details along with its comments successfully retrieved.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      thread:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: 'thread-123'
+                          title:
+                            type: string
+                            example: 'Will AI Replace Programmers?'
+                          body:
+                            type: string
+                            example: 'AI helps developers write code faster, but problem-solving skills are still essential.'
+                          date:
+                            type: string
+                            example: '2026-05-22T07:00:00.000Z'
+                          username:
+                            type: string
+                            example: 'gold_orange'
+                          comments:
+                            type: array
+                            items:
+                              type: object
+                              properties:
+                                id:
+                                  type: string
+                                  example: 'comment-123'
+                                username:
+                                  type: string
+                                  example: 'johndoe'
+                                date:
+                                  type: string
+                                  example: '2026-05-22T08:30:00.000Z'
+                                content:
+                                  type: string
+                                  example: 'AI is useful for speeding up development, especially for repetitive tasks.'
+                                replies:
+                                  type: array
+                                  items:
+                                    type: object
+                                    properties:
+                                      id:
+                                        type: string
+                                        example: 'reply-123'
+                                      username:
+                                        type: string
+                                        example: 'diana'
+                                      date:
+                                        type: string
+                                        example: '2026-05-22T08:30:00.000Z'
+                                      content:
+                                        type: string
+                                        example: 'True, but developers still need strong debugging and system design skills.'
+        404:
+          description: Thread not found. Stop guessing random IDs that don't exist in the database.

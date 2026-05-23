@@ -1,4 +1,8 @@
 import express from 'express';
+
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from '../docs/swagger.js';
+
 import ClientError from '../../Commons/exceptions/ClientError.js';
 import DomainErrorTranslator from '../../Commons/exceptions/DomainErrorTranslator.js';
 import users from '../../Interfaces/http/api/users/index.js';
@@ -14,6 +18,9 @@ const createServer = async (container) => {
 
   // Middleware for parsing JSON
   app.use(express.json());
+
+  // Documentation
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   // Register routes
   app.use('/users', users(container));

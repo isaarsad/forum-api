@@ -1,0 +1,114 @@
+paths:
+  /threads/{threadId}/comments/{commentId}/replies:
+    post:
+      summary: Add a reply to a comment
+      tags:
+        - Replies
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          description: The ID of the thread containing the comment
+          schema:
+            type: string
+            example: 'thread-123'
+        - name: commentId
+          in: path
+          required: true
+          description: The ID of the comment you want to reply to
+          schema:
+            type: string
+            example: 'comment-123'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - content
+              properties:
+                content:
+                  type: string
+                  example: 'I dont think so.'
+      responses:
+        201:
+          description: Reply successfully added.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+                  data:
+                    type: object
+                    properties:
+                      addedReply:
+                        type: object
+                        properties:
+                          id:
+                            type: string
+                            example: 'reply-123'
+                          content:
+                            type: string
+                            example: 'I dont think so.'
+                          owner:
+                            type: string
+                            example: 'user-456'
+        400:
+          description: Bad Request. Missing required properties or invalid data types.
+        401:
+          description: Unauthorized. Authentication is required to access this resource.
+        404:
+          description: Thread or Comment Not Found.
+
+  /threads/{threadId}/comments/{commentId}/replies/{replyId}:
+    delete:
+      summary: Delete a reply from a comment
+      tags:
+        - Replies
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: threadId
+          in: path
+          required: true
+          description: The ID of the thread
+          schema:
+            type: string
+            example: 'thread-123'
+        - name: commentId
+          in: path
+          required: true
+          description: The ID of the comment containing the reply
+          schema:
+            type: string
+            example: 'comment-123'
+        - name: replyId
+          in: path
+          required: true
+          description: The ID of the reply to be deleted
+          schema:
+            type: string
+            example: 'reply-123'
+      responses:
+        200:
+          description: Reply successfully deleted.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: success
+        401:
+          description: Unauthorized. Missing or invalid authentication token.
+        403:
+          description: Forbidden. You do not have permission to delete this reply.
+        404:
+          description: Thread, Comment, or Reply Not Found

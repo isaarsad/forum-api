@@ -1,0 +1,31 @@
+paths:
+  /users:
+    post:
+      summary: Register new user
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+                - fullname
+              properties:
+                username:
+                  type: string
+                  example: arsadisa
+                password:
+                  type: string
+                  example: secret_password
+                fullname:
+                  type: string
+                  example: Isa Arsad
+      responses:
+        201:
+          description: User created successfully
+        400:
+          description: Invalid input or username already exist
