@@ -1,4 +1,3 @@
-/* istanbul ignore file */
 /* eslint-disable camelcase */
 
 const mapCommentDBToModel = ({ id, username, date, content, is_delete, like_count }) => ({
